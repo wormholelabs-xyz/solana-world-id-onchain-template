@@ -1,4 +1,9 @@
 {
+  "name": "solana-world-id-onchain-template",
+  "private": true,
+  "workspaces": [
+    "app/frontend/*"
+  ],
   "license": "ISC",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
@@ -7,6 +12,11 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",
     "@ethersproject/keccak256": "^5.7.0",
+    "@solana/wallet-adapter-base": "^0.9.23",
+    "@solana/wallet-adapter-react": "^0.15.35",
+    "@solana/wallet-adapter-react-ui": "^0.9.35",
+    "@solana/wallet-adapter-wallets": "^0.19.32",
+    "@solana/web3.js": "^1.95.1",
     "@wormhole-foundation/wormhole-query-sdk": "^0.0.12"
   },
   "devDependencies": {
@@ -14,6 +24,9 @@
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.8",
     "@types/mocha": "^9.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
     "chai": "^4.3.4",
     "chai-as-promised": "7.1.1",
     "mocha": "^9.0.3",
