@@ -134,25 +134,27 @@
 		"accounts": [
 		  {
 			"name": "root",
-			"writable": true,
+			"docs": [
+			  "This can be any expired root account.",
+			  "The PDA check is omitted since this code allows cleaning up any root",
+			  "and the discriminator will still be checked."
+			],
+			"writable": true
+		  },
+		  {
+			"name": "config",
 			"pda": {
 			  "seeds": [
 				{
 				  "kind": "const",
 				  "value": [
-					82,
+					67,
 					111,
-					111,
-					116
+					110,
+					102,
+					105,
+					103
 				  ]
-				},
-				{
-				  "kind": "arg",
-				  "path": "root_hash"
-				},
-				{
-				  "kind": "arg",
-				  "path": "verification_type"
 				}
 			  ]
 			}
@@ -164,26 +166,34 @@
 			]
 		  }
 		],
-		"args": [
+		"args": []
+	  },
+	  {
+		"name": "close_signatures",
+		"discriminator": [
+		  192,
+		  65,
+		  63,
+		  117,
+		  213,
+		  138,
+		  179,
+		  190
+		],
+		"accounts": [
 		  {
-			"name": "root_hash",
-			"type": {
-			  "array": [
-				"u8",
-				32
-			  ]
-			}
+			"name": "guardian_signatures",
+			"writable": true
 		  },
 		  {
-			"name": "verification_type",
-			"type": {
-			  "array": [
-				"u8",
-				1
-			  ]
-			}
+			"name": "refund_recipient",
+			"signer": true,
+			"relations": [
+			  "guardian_signatures"
+			]
 		  }
-		]
+		],
+		"args": []
 	  },
 	  {
 		"name": "initialize",
@@ -312,6 +322,52 @@
 				"name": "InitializeArgs"
 			  }
 			}
+		  }
+		]
+	  },
+	  {
+		"name": "post_signatures",
+		"discriminator": [
+		  138,
+		  2,
+		  53,
+		  166,
+		  45,
+		  77,
+		  137,
+		  51
+		],
+		"accounts": [
+		  {
+			"name": "payer",
+			"writable": true,
+			"signer": true
+		  },
+		  {
+			"name": "guardian_signatures",
+			"writable": true,
+			"signer": true
+		  },
+		  {
+			"name": "system_program",
+			"address": "11111111111111111111111111111111"
+		  }
+		],
+		"args": [
+		  {
+			"name": "guardian_signatures",
+			"type": {
+			  "vec": {
+				"array": [
+				  "u8",
+				  66
+				]
+			  }
+			}
+		  },
+		  {
+			"name": "total_signatures",
+			"type": "u8"
 		  }
 		]
 	  },
@@ -528,84 +584,6 @@
 		"args": []
 	  },
 	  {
-		"name": "update_root_expiry",
-		"discriminator": [
-		  29,
-		  1,
-		  240,
-		  153,
-		  210,
-		  4,
-		  145,
-		  47
-		],
-		"accounts": [
-		  {
-			"name": "root",
-			"writable": true,
-			"pda": {
-			  "seeds": [
-				{
-				  "kind": "const",
-				  "value": [
-					82,
-					111,
-					111,
-					116
-				  ]
-				},
-				{
-				  "kind": "arg",
-				  "path": "root_hash"
-				},
-				{
-				  "kind": "arg",
-				  "path": "verification_type"
-				}
-			  ]
-			}
-		  },
-		  {
-			"name": "config",
-			"pda": {
-			  "seeds": [
-				{
-				  "kind": "const",
-				  "value": [
-					67,
-					111,
-					110,
-					102,
-					105,
-					103
-				  ]
-				}
-			  ]
-			}
-		  }
-		],
-		"args": [
-		  {
-			"name": "root_hash",
-			"type": {
-			  "array": [
-				"u8",
-				32
-			  ]
-			}
-		  },
-		  {
-			"name": "verification_type",
-			"type": {
-			  "array": [
-				"u8",
-				1
-			  ]
-			}
-		  }
-		]
-	  },
-	  {
 		"name": "update_root_with_query",
 		"discriminator": [
 		  137,
@@ -626,8 +604,7 @@
 		  {
 			"name": "guardian_set",
 			"docs": [
-			  "Guardian set used for signature verification (whose index should agree with the signature",
-			  "set account's guardian set index)."
+			  "Guardian set used for signature verification."
 			],
 			"pda": {
 			  "seeds": [
@@ -648,9 +625,8 @@
 				  ]
 				},
 				{
-				  "kind": "account",
-				  "path": "signature_set.guardian_set_index",
-				  "account": "QuerySignatureSet"
+				  "kind": "arg",
+				  "path": "guardian_set_index"
 				}
 			  ],
 			  "program": {
@@ -693,10 +669,9 @@
 			}
 		  },
 		  {
-			"name": "signature_set",
+			"name": "guardian_signatures",
 			"docs": [
-			  "Stores signature validation from Sig Verify native program.",
-			  "TODO: does this need to have an owner defined? maybe yes after moving to a separate crate"
+			  "Stores unverified guardian signatures as they are too large to fit in the instruction data."
 			],
 			"writable": true
 		  },
@@ -777,7 +752,7 @@
 		  {
 			"name": "refund_recipient",
 			"relations": [
-			  "signature_set"
+			  "guardian_signatures"
 			]
 		  },
 		  {
@@ -798,6 +773,10 @@
 				32
 			  ]
 			}
+		  },
+		  {
+			"name": "guardian_set_index",
+			"type": "u32"
 		  }
 		]
 	  },
@@ -834,6 +813,24 @@
 				{
 				  "kind": "arg",
 				  "path": "verification_type"
+				}
+			  ]
+			}
+		  },
+		  {
+			"name": "config",
+			"pda": {
+			  "seeds": [
+				{
+				  "kind": "const",
+				  "value": [
+					67,
+					111,
+					110,
+					102,
+					105,
+					103
+				  ]
 				}
 			  ]
 			}
@@ -895,64 +892,6 @@
 			}
 		  }
 		]
-	  },
-	  {
-		"name": "verify_query_signatures",
-		"discriminator": [
-		  173,
-		  196,
-		  163,
-		  56,
-		  163,
-		  66,
-		  36,
-		  23
-		],
-		"accounts": [
-		  {
-			"name": "payer",
-			"writable": true,
-			"signer": true
-		  },
-		  {
-			"name": "guardian_set",
-			"docs": [
-			  "The wormhole guardian set account."
-			]
-		  },
-		  {
-			"name": "signature_set",
-			"docs": [
-			  "Stores signature validation from Sig Verify native program."
-			],
-			"writable": true,
-			"signer": true
-		  },
-		  {
-			"name": "instructions",
-			"docs": [
-			  "Instruction sysvar.",
-			  "",
-			  "precede this instruction."
-			],
-			"address": "Sysvar1nstructions1111111111111111111111111"
-		  },
-		  {
-			"name": "system_program",
-			"address": "11111111111111111111111111111111"
-		  }
-		],
-		"args": [
-		  {
-			"name": "signer_indices",
-			"type": {
-			  "array": [
-				"i8",
-				19
-			  ]
-			}
-		  }
-		]
 	  }
 	],
 	"accounts": [
@@ -970,6 +909,19 @@
 		]
 	  },
 	  {
+		"name": "GuardianSignatures",
+		"discriminator": [
+		  203,
+		  184,
+		  130,
+		  157,
+		  113,
+		  14,
+		  184,
+		  83
+		]
+	  },
+	  {
 		"name": "LatestRoot",
 		"discriminator": [
 		  12,
@@ -980,19 +932,6 @@
 		  63,
 		  169,
 		  95
-		]
-	  },
-	  {
-		"name": "QuerySignatureSet",
-		"discriminator": [
-		  175,
-		  29,
-		  232,
-		  228,
-		  189,
-		  231,
-		  179,
-		  12
 		]
 	  },
 	  {
@@ -1024,392 +963,147 @@
 	],
 	"errors": [
 	  {
-		"code": 6002,
-		"name": "InvalidInstructionArgument",
-		"msg": "InvalidInstructionArgument"
-	  },
-	  {
-		"code": 6003,
-		"name": "AccountNotZeroed",
-		"msg": "AccountNotZeroed"
-	  },
-	  {
-		"code": 6004,
-		"name": "InvalidDataConversion",
-		"msg": "InvalidDataConversion"
-	  },
-	  {
-		"code": 6006,
-		"name": "U64Overflow",
-		"msg": "U64Overflow"
-	  },
-	  {
-		"code": 6008,
-		"name": "InvalidComputeSize",
-		"msg": "InvalidComputeSize"
-	  },
-	  {
-		"code": 6016,
-		"name": "InvalidChain",
-		"msg": "InvalidChain"
-	  },
-	  {
-		"code": 6032,
-		"name": "InvalidGovernanceEmitter",
-		"msg": "InvalidGovernanceEmitter"
-	  },
-	  {
-		"code": 6034,
-		"name": "InvalidGovernanceAction",
-		"msg": "InvalidGovernanceAction"
-	  },
-	  {
-		"code": 6036,
-		"name": "LatestGuardianSetRequired",
-		"msg": "LatestGuardianSetRequired"
-	  },
-	  {
-		"code": 6038,
-		"name": "GovernanceForAnotherChain",
-		"msg": "GovernanceForAnotherChain"
-	  },
-	  {
-		"code": 6040,
-		"name": "InvalidGovernanceVaa",
-		"msg": "InvalidGovernanceVaa"
-	  },
-	  {
 		"code": 6256,
-		"name": "InsufficientFees",
-		"msg": "InsufficientFees"
-	  },
-	  {
-		"code": 6258,
-		"name": "EmitterMismatch",
-		"msg": "EmitterMismatch"
-	  },
-	  {
-		"code": 6260,
-		"name": "NotReadyForPublishing",
-		"msg": "NotReadyForPublishing"
-	  },
-	  {
-		"code": 6262,
-		"name": "InvalidPreparedMessage",
-		"msg": "InvalidPreparedMessage"
-	  },
-	  {
-		"code": 6264,
-		"name": "ExecutableEmitter",
-		"msg": "ExecutableEmitter"
-	  },
-	  {
-		"code": 6266,
-		"name": "LegacyEmitter",
-		"msg": "LegacyEmitter"
-	  },
-	  {
-		"code": 6512,
-		"name": "InvalidSignatureSet",
-		"msg": "InvalidSignatureSet"
-	  },
-	  {
-		"code": 6514,
-		"name": "InvalidMessageHash",
-		"msg": "InvalidMessageHash"
-	  },
-	  {
-		"code": 6515,
-		"name": "NoQuorum",
-		"msg": "NoQuorum"
-	  },
-	  {
-		"code": 6516,
-		"name": "MessageMismatch",
-		"msg": "MessageMismatch"
-	  },
-	  {
-		"code": 7024,
-		"name": "NotEnoughLamports",
-		"msg": "NotEnoughLamports"
-	  },
-	  {
-		"code": 7026,
-		"name": "InvalidFeeRecipient",
-		"msg": "InvalidFeeRecipient"
-	  },
-	  {
-		"code": 7280,
-		"name": "ImplementationMismatch",
-		"msg": "ImplementationMismatch"
-	  },
-	  {
-		"code": 7536,
-		"name": "InvalidGuardianSetIndex",
-		"msg": "InvalidGuardianSetIndex"
-	  },
-	  {
-		"code": 7792,
-		"name": "GuardianSetMismatch",
-		"msg": "GuardianSetMismatch"
-	  },
-	  {
-		"code": 7794,
-		"name": "InstructionAtWrongIndex",
-		"msg": "InstructionAtWrongIndex"
-	  },
-	  {
-		"code": 7795,
-		"name": "EmptySigVerifyInstruction",
-		"msg": "EmptySigVerifyInstruction"
-	  },
-	  {
-		"code": 7796,
-		"name": "InvalidSigVerifyInstruction",
-		"msg": "InvalidSigVerifyInstruction"
-	  },
-	  {
-		"code": 7798,
-		"name": "GuardianSetExpired",
-		"msg": "GuardianSetExpired"
-	  },
-	  {
-		"code": 7800,
-		"name": "InvalidGuardianKeyRecovery",
-		"msg": "InvalidGuardianKeyRecovery"
-	  },
-	  {
-		"code": 7802,
-		"name": "SignerIndicesMismatch",
-		"msg": "SignerIndicesMismatch"
-	  },
-	  {
-		"code": 8048,
-		"name": "PayloadSizeMismatch",
-		"msg": "PayloadSizeMismatch"
-	  },
-	  {
-		"code": 10112,
-		"name": "ZeroGuardians",
-		"msg": "ZeroGuardians"
-	  },
-	  {
-		"code": 10128,
-		"name": "GuardianZeroAddress",
-		"msg": "GuardianZeroAddress"
-	  },
-	  {
-		"code": 10144,
-		"name": "DuplicateGuardianAddress",
-		"msg": "DuplicateGuardianAddress"
-	  },
-	  {
-		"code": 10160,
-		"name": "MessageAlreadyPublished",
-		"msg": "MessageAlreadyPublished"
-	  },
-	  {
-		"code": 10176,
-		"name": "VaaWritingDisallowed",
-		"msg": "VaaWritingDisallowed"
-	  },
-	  {
-		"code": 10192,
-		"name": "VaaAlreadyVerified",
-		"msg": "VaaAlreadyVerified"
-	  },
-	  {
-		"code": 10208,
-		"name": "InvalidGuardianIndex",
-		"msg": "InvalidGuardianIndex"
-	  },
-	  {
-		"code": 10224,
-		"name": "InvalidSignature",
-		"msg": "InvalidSignature"
-	  },
-	  {
-		"code": 10256,
-		"name": "UnverifiedVaa",
-		"msg": "UnverifiedVaa"
-	  },
-	  {
-		"code": 10258,
-		"name": "VaaStillProcessing",
-		"msg": "VaaStillProcessing"
-	  },
-	  {
-		"code": 10260,
-		"name": "InWritingStatus",
-		"msg": "InWritingStatus"
-	  },
-	  {
-		"code": 10262,
-		"name": "NotInWritingStatus",
-		"msg": "NotInWritingStatus"
-	  },
-	  {
-		"code": 10264,
-		"name": "InvalidMessageStatus",
-		"msg": "InvalidMessageStatus"
-	  },
-	  {
-		"code": 10266,
-		"name": "HashNotComputed",
-		"msg": "HashNotComputed"
-	  },
-	  {
-		"code": 10268,
-		"name": "InvalidVaaVersion",
-		"msg": "InvalidVaaVersion"
-	  },
-	  {
-		"code": 10270,
-		"name": "InvalidCreatedAccountSize",
-		"msg": "InvalidCreatedAccountSize"
-	  },
-	  {
-		"code": 10272,
-		"name": "DataOverflow",
-		"msg": "DataOverflow"
-	  },
-	  {
-		"code": 10274,
-		"name": "ExceedsMaxPayloadSize",
-		"msg": "ExceedsMaxPayloadSize (30KB)"
-	  },
-	  {
-		"code": 10276,
-		"name": "CannotParseVaa",
-		"msg": "CannotParseVaa"
-	  },
-	  {
-		"code": 10278,
-		"name": "EmitterAuthorityMismatch",
-		"msg": "EmitterAuthorityMismatch"
-	  },
-	  {
-		"code": 10280,
-		"name": "InvalidProgramEmitter",
-		"msg": "InvalidProgramEmitter"
-	  },
-	  {
-		"code": 10282,
 		"name": "WriteAuthorityMismatch",
 		"msg": "WriteAuthorityMismatch"
 	  },
 	  {
-		"code": 10284,
-		"name": "PostedVaaPayloadTooLarge",
-		"msg": "PostedVaaPayloadTooLarge"
+		"code": 6257,
+		"name": "GuardianSetExpired",
+		"msg": "GuardianSetExpired"
 	  },
 	  {
-		"code": 10286,
-		"name": "ExecutableDisallowed",
-		"msg": "ExecutableDisallowed"
+		"code": 6258,
+		"name": "InvalidMessageHash",
+		"msg": "InvalidMessageHash"
 	  },
 	  {
-		"code": 18288,
+		"code": 6259,
+		"name": "NoQuorum",
+		"msg": "NoQuorum"
+	  },
+	  {
+		"code": 6260,
+		"name": "InvalidGuardianIndexNonIncreasing",
+		"msg": "InvalidGuardianIndexNonIncreasing"
+	  },
+	  {
+		"code": 6261,
+		"name": "InvalidGuardianIndexOutOfRange",
+		"msg": "InvalidGuardianIndexOutOfRange"
+	  },
+	  {
+		"code": 6262,
+		"name": "InvalidSignature",
+		"msg": "InvalidSignature"
+	  },
+	  {
+		"code": 6263,
+		"name": "InvalidGuardianKeyRecovery",
+		"msg": "InvalidGuardianKeyRecovery"
+	  },
+	  {
+		"code": 6272,
 		"name": "FailedToParseResponse",
 		"msg": "FailedToParseResponse"
 	  },
 	  {
-		"code": 18289,
+		"code": 6273,
 		"name": "InvalidNumberOfRequests",
 		"msg": "InvalidNumberOfRequests"
 	  },
 	  {
-		"code": 18290,
+		"code": 6274,
 		"name": "InvalidRequestChainId",
 		"msg": "InvalidRequestChainId"
 	  },
 	  {
-		"code": 18291,
+		"code": 6275,
 		"name": "InvalidRequestType",
 		"msg": "InvalidRequestType"
 	  },
 	  {
-		"code": 18292,
+		"code": 6276,
 		"name": "InvalidRequestCallDataLength",
 		"msg": "InvalidRequestCallDataLength"
 	  },
 	  {
-		"code": 18293,
+		"code": 6277,
 		"name": "InvalidRequestContract",
 		"msg": "InvalidRequestContract"
 	  },
 	  {
-		"code": 18294,
+		"code": 6278,
 		"name": "InvalidRequestSignature",
 		"msg": "InvalidRequestSignature"
 	  },
 	  {
-		"code": 18295,
+		"code": 6279,
 		"name": "InvalidNumberOfResponses",
 		"msg": "InvalidNumberOfResponses"
 	  },
 	  {
-		"code": 18296,
+		"code": 6280,
 		"name": "InvalidResponseChainId",
 		"msg": "InvalidResponseChainId"
 	  },
 	  {
-		"code": 18297,
+		"code": 6281,
 		"name": "StaleBlockNum",
 		"msg": "StaleBlockNum"
 	  },
 	  {
-		"code": 18304,
+		"code": 6288,
 		"name": "StaleBlockTime",
 		"msg": "StaleBlockTime"
 	  },
 	  {
-		"code": 18305,
+		"code": 6289,
 		"name": "InvalidResponseType",
 		"msg": "InvalidResponseType"
 	  },
 	  {
-		"code": 18306,
+		"code": 6290,
 		"name": "InvalidResponseResultsLength",
 		"msg": "InvalidResponseResultsLength"
 	  },
 	  {
-		"code": 18307,
+		"code": 6291,
 		"name": "InvalidResponseResultLength",
 		"msg": "InvalidResponseResultLength"
 	  },
 	  {
-		"code": 18308,
+		"code": 6292,
 		"name": "RootHashMismatch",
 		"msg": "RootHashMismatch"
 	  },
 	  {
-		"code": 18309,
+		"code": 6293,
 		"name": "NoopExpiryUpdate",
 		"msg": "NoopExpiryUpdate"
 	  },
 	  {
-		"code": 18310,
+		"code": 6294,
 		"name": "RootUnexpired",
 		"msg": "RootUnexpired"
 	  },
 	  {
-		"code": 18311,
+		"code": 6512,
 		"name": "RootExpired",
 		"msg": "RootExpired"
 	  },
 	  {
-		"code": 18312,
+		"code": 6513,
 		"name": "CreateGroth16VerifierFailed",
 		"msg": "CreateGroth16VerifierFailed"
 	  },
 	  {
-		"code": 18313,
+		"code": 6514,
 		"name": "Groth16ProofVerificationFailed",
 		"msg": "Groth16ProofVerificationFailed"
 	  },
 	  {
-		"code": 22384,
+		"code": 10096,
 		"name": "InvalidPendingOwner",
 		"msg": "InvalidPendingOwner"
 	  }
@@ -1453,6 +1147,37 @@
 				"Time (in seconds) after which an attempted update should be rejected."
 			  ],
 			  "type": "u64"
+			}
+		  ]
+		}
+	  },
+	  {
+		"name": "GuardianSignatures",
+		"type": {
+		  "kind": "struct",
+		  "fields": [
+			{
+			  "name": "refund_recipient",
+			  "docs": [
+				"Payer of this guardian signatures account.",
+				"Only they may amend signatures.",
+				"Used for reimbursements upon cleanup."
+			  ],
+			  "type": "pubkey"
+			},
+			{
+			  "name": "guardian_signatures",
+			  "docs": [
+				"Unverified guardian signatures."
+			  ],
+			  "type": {
+				"vec": {
+				  "array": [
+					"u8",
+					66
+				  ]
+				}
+			  }
 			}
 		  ]
 		}
@@ -1519,44 +1244,18 @@
 				  32
 				]
 			  }
-			}
-		  ]
-		}
-	  },
-	  {
-		"name": "QuerySignatureSet",
-		"type": {
-		  "kind": "struct",
-		  "fields": [
+			},
 			{
-			  "name": "sig_verify_successes",
+			  "name": "verification_type",
 			  "docs": [
-				"Verification success per guardian."
+				"SEED: Verification type. Stored for off-chain convenience."
 			  ],
 			  "type": {
-				"vec": "bool"
+				"array": [
+				  "u8",
+				  1
+				]
 			  }
-			},
-			{
-			  "name": "message",
-			  "docs": [
-				"35 prefix + 32 keccak(message)."
-			  ],
-			  "type": "bytes"
-			},
-			{
-			  "name": "guardian_set_index",
-			  "docs": [
-				"Index of the guardian set."
-			  ],
-			  "type": "u32"
-			},
-			{
-			  "name": "refund_recipient",
-			  "docs": [
-				"Payer of this signature set account, used for reimbursements upon cleanup."
-			  ],
-			  "type": "pubkey"
 			}
 		  ]
 		}
@@ -1597,18 +1296,35 @@
 			  "type": "u64"
 			},
 			{
-			  "name": "expiry_time",
-			  "docs": [
-				"Time (in seconds) after which this root should be considered expired."
-			  ],
-			  "type": "u64"
-			},
-			{
 			  "name": "refund_recipient",
 			  "docs": [
 				"Payer of this root account, used for reimbursements upon cleanup."
 			  ],
 			  "type": "pubkey"
+			},
+			{
+			  "name": "root",
+			  "docs": [
+				"SEED: Root hash. Stored for off-chain convenience."
+			  ],
+			  "type": {
+				"array": [
+				  "u8",
+				  32
+				]
+			  }
+			},
+			{
+			  "name": "verification_type",
+			  "docs": [
+				"SEED: Verification type. Stored for off-chain convenience."
+			  ],
+			  "type": {
+				"array": [
+				  "u8",
+				  1
+				]
+			  }
 			}
 		  ]
 		}
@@ -1658,4 +1374,3 @@
 	  }
 	]
   }
-  
