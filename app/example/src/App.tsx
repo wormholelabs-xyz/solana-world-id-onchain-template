@@ -4,7 +4,10 @@ import {
   WalletProvider,
 } from "@solana/wallet-adapter-react";
 import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
+import {
+  WalletModalProvider,
+  WalletMultiButton,
+} from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
 import {
   Card,
@@ -13,15 +16,17 @@ import {
   CardHeader,
   CardTitle,
 } from "./components/ui/card";
-import { WalletConnectButton } from "./components/WalletConnectButton";
+import { Toaster } from "./components/ui/toaster";
+
 import { VerifyAndExecuteButton } from "./components/VerifyAndExecuteButton";
+import { getEnv } from "./utils/env";
 
 function App() {
-  const endpoint = "http://localhost:8899";
+  const { SOLANA_RPC_URL } = getEnv();
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
+    <ConnectionProvider endpoint={SOLANA_RPC_URL}>
       <WalletProvider wallets={wallets} autoConnect={false}>
         <WalletModalProvider>
           <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -33,10 +38,11 @@ function App() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <WalletConnectButton />
+                <WalletMultiButton />
                 <VerifyAndExecuteButton />
               </CardContent>
             </Card>
+            <Toaster />
           </div>
         </WalletModalProvider>
       </WalletProvider>
