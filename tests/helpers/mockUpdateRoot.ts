@@ -17,9 +17,14 @@ export async function mockUpdateRoot(
   rootHash: number[]
 ) {
   const slot = await program.provider.connection.getSlot();
-  const blockTime = new BN(
-    await program.provider.connection.getBlockTime(slot)
-  ).mul(new BN(1_000_000)); // seconds to microseconds;
+  const blockTimeInSeconds = await program.provider.connection.getBlockTime(
+    slot
+  );
+
+  if (!blockTimeInSeconds) {
+    throw new Error("Block time is undefined");
+  }
+  const blockTime = new BN(blockTimeInSeconds).mul(new BN(1_000_000)); // seconds to microseconds;
   const latestRootKey = deriveLatestRootKey(program.programId, 0);
   const latestRoot = await program.account.latestRoot.fetch(latestRootKey);
   // this is a query response from mainnet that can be used as the basis for an update
@@ -59,3 +64,4 @@ export async function mockUpdateRoot(
     })
     .rpc();
 }
+
