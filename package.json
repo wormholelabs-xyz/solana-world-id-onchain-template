@@ -7,7 +7,8 @@
   "license": "ISC",
   "scripts": {
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
-    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check"
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
+    "initializeWorldID": "ts-node app/scripts/initializeWorldID.ts"
   },
   "dependencies": {
     "@coral-xyz/anchor": "^0.30.1",
@@ -17,7 +18,8 @@
     "@solana/wallet-adapter-react-ui": "^0.9.35",
     "@solana/wallet-adapter-wallets": "^0.19.32",
     "@solana/web3.js": "^1.95.1",
-    "@wormhole-foundation/wormhole-query-sdk": "^0.0.12"
+    "@wormhole-foundation/wormhole-query-sdk": "^0.0.12",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",

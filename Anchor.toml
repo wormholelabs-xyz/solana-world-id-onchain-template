@@ -16,6 +16,37 @@ url = "https://api.apr.dev"
 cluster = "Localnet"
 wallet = "tests/keys/pFCBP4bhqdSsrWUVTgqhPsLrfEdChBK17vgFM7TxjxQ.json"
 
+### Solana World ID Program (Devnet)
+[[test.genesis]]
+address = "9QwAWx3TKg4CaTjHNhBefQeNSzEKDe2JDxL46F76tVDv"
+program = "tests/artifacts/solana-world-id-program.so"
+
+[[test.validator.account]]
+address="5FfhKEsPMY6376WW9dUE1FTyRTttH4annJNJ4NCyF4av"
+filename="tests/accounts/solana_world_id_program/config.json"
+
+[[test.validator.account]]
+address="BkQZqKKbagHYUxz61R8S6YxnanM7aB1RKjb2rf4QAUDs"
+filename="tests/accounts/solana_world_id_program/latest_root.json"
+
+## CORE BRIDGE TESTNET (Solana devnet)
+### Wormhole Core Bridge Program (Testnet)
+# [[test.validator.clone]]
+# address = "3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5"
+[[test.genesis]]
+address = "3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5"
+program = "tests/artifacts/testnet_core_bridge.so"
+
+### Wormhole Core Bridge (Testnet) -- Config
+[[test.validator.account]]
+address = "6bi4JGDoRwUs9TYBuvoA7dUVyikTJDrJsJU1ew6KVLiu"
+filename = "tests/accounts/core_bridge_testnet/config.json"
+
+### Wormhole Core Bridge (Testnet) -- Guardian Set 0
+[[test.validator.account]]
+address = "dxZtypiKT5D9LYzdPxjvSZER9MgYfeRVU5qpMTMTRs4"
+filename = "tests/accounts/core_bridge_testnet/guardian_set_0_mock.json"
+
 [scripts]
 test = "npx tsc --noEmit && yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/solana-world-id-onchain-template.ts"
 

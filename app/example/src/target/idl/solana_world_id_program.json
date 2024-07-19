@@ -1,0 +1,1376 @@
+{
+  "address": "9QwAWx3TKg4CaTjHNhBefQeNSzEKDe2JDxL46F76tVDv",
+  "metadata": {
+    "name": "solana_world_id_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "claim_ownership",
+      "discriminator": [
+        236,
+        166,
+        239,
+        222,
+        14,
+        45,
+        143,
+        254
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "upgrade_lock",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  112,
+                  103,
+                  114,
+                  97,
+                  100,
+                  101,
+                  95,
+                  108,
+                  111,
+                  99,
+                  107
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "new_owner",
+          "signer": true
+        },
+        {
+          "name": "program_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  124,
+                  255,
+                  24,
+                  248,
+                  7,
+                  150,
+                  208,
+                  255,
+                  225,
+                  244,
+                  56,
+                  157,
+                  121,
+                  39,
+                  45,
+                  3,
+                  230,
+                  56,
+                  4,
+                  46,
+                  37,
+                  39,
+                  124,
+                  197,
+                  125,
+                  184,
+                  111,
+                  162,
+                  164,
+                  27,
+                  84,
+                  229
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "bpf_loader_upgradeable_program",
+          "address": "BPFLoaderUpgradeab1e11111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "clean_up_root",
+      "discriminator": [
+        106,
+        202,
+        208,
+        50,
+        239,
+        7,
+        142,
+        41
+      ],
+      "accounts": [
+        {
+          "name": "root",
+          "docs": [
+            "This can be any expired root account.",
+            "The PDA check is omitted since this code allows cleaning up any root",
+            "and the discriminator will still be checked."
+          ],
+          "writable": true
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "refund_recipient",
+          "relations": [
+            "root"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "close_signatures",
+      "discriminator": [
+        192,
+        65,
+        63,
+        117,
+        213,
+        138,
+        179,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "guardian_signatures",
+          "writable": true
+        },
+        {
+          "name": "refund_recipient",
+          "signer": true,
+          "relations": [
+            "guardian_signatures"
+          ]
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "deployer",
+          "signer": true
+        },
+        {
+          "name": "program_data",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  124,
+                  255,
+                  24,
+                  248,
+                  7,
+                  150,
+                  208,
+                  255,
+                  225,
+                  244,
+                  56,
+                  157,
+                  121,
+                  39,
+                  45,
+                  3,
+                  230,
+                  56,
+                  4,
+                  46,
+                  37,
+                  39,
+                  124,
+                  197,
+                  125,
+                  184,
+                  111,
+                  162,
+                  164,
+                  27,
+                  84,
+                  229
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "latest_root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  76,
+                  97,
+                  116,
+                  101,
+                  115,
+                  116,
+                  82,
+                  111,
+                  111,
+                  116
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "args",
+          "type": {
+            "defined": {
+              "name": "InitializeArgs"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "post_signatures",
+      "discriminator": [
+        138,
+        2,
+        53,
+        166,
+        45,
+        77,
+        137,
+        51
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "guardian_signatures",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "guardian_signatures",
+          "type": {
+            "vec": {
+              "array": [
+                "u8",
+                66
+              ]
+            }
+          }
+        },
+        {
+          "name": "total_signatures",
+          "type": "u8"
+        }
+      ]
+    },
+    {
+      "name": "set_allowed_update_staleness",
+      "discriminator": [
+        97,
+        49,
+        167,
+        77,
+        179,
+        25,
+        243,
+        144
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "allowed_update_staleness",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "set_root_expiry",
+      "discriminator": [
+        2,
+        27,
+        190,
+        61,
+        106,
+        232,
+        172,
+        222
+      ],
+      "accounts": [
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "root_expiry",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "transfer_ownership",
+      "discriminator": [
+        65,
+        177,
+        215,
+        73,
+        53,
+        45,
+        99,
+        47
+      ],
+      "accounts": [
+        {
+          "name": "config",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "owner",
+          "signer": true,
+          "relations": [
+            "config"
+          ]
+        },
+        {
+          "name": "new_owner"
+        },
+        {
+          "name": "upgrade_lock",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  117,
+                  112,
+                  103,
+                  114,
+                  97,
+                  100,
+                  101,
+                  95,
+                  108,
+                  111,
+                  99,
+                  107
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program_data",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  124,
+                  255,
+                  24,
+                  248,
+                  7,
+                  150,
+                  208,
+                  255,
+                  225,
+                  244,
+                  56,
+                  157,
+                  121,
+                  39,
+                  45,
+                  3,
+                  230,
+                  56,
+                  4,
+                  46,
+                  37,
+                  39,
+                  124,
+                  197,
+                  125,
+                  184,
+                  111,
+                  162,
+                  164,
+                  27,
+                  84,
+                  229
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "bpf_loader_upgradeable_program",
+          "address": "BPFLoaderUpgradeab1e11111111111111111111111"
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "update_root_with_query",
+      "discriminator": [
+        137,
+        107,
+        96,
+        126,
+        245,
+        99,
+        23,
+        201
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "guardian_set",
+          "docs": [
+            "Guardian set used for signature verification."
+          ],
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  71,
+                  117,
+                  97,
+                  114,
+                  100,
+                  105,
+                  97,
+                  110,
+                  83,
+                  101,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "guardian_set_index"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                14,
+                10,
+                88,
+                154,
+                65,
+                165,
+                95,
+                189,
+                102,
+                197,
+                42,
+                71,
+                95,
+                45,
+                146,
+                166,
+                211,
+                220,
+                155,
+                71,
+                71,
+                17,
+                76,
+                185,
+                175,
+                130,
+                90,
+                152,
+                181,
+                69,
+                211,
+                206
+              ]
+            }
+          }
+        },
+        {
+          "name": "guardian_signatures",
+          "docs": [
+            "Stores unverified guardian signatures as they are too large to fit in the instruction data."
+          ],
+          "writable": true
+        },
+        {
+          "name": "root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  111,
+                  111,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "root_hash"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "latest_root",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  76,
+                  97,
+                  116,
+                  101,
+                  115,
+                  116,
+                  82,
+                  111,
+                  111,
+                  116
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  0
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "refund_recipient",
+          "relations": [
+            "guardian_signatures"
+          ]
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "bytes",
+          "type": "bytes"
+        },
+        {
+          "name": "root_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "guardian_set_index",
+          "type": "u32"
+        }
+      ]
+    },
+    {
+      "name": "verify_groth16_proof",
+      "discriminator": [
+        54,
+        190,
+        59,
+        14,
+        54,
+        75,
+        155,
+        6
+      ],
+      "accounts": [
+        {
+          "name": "root",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  82,
+                  111,
+                  111,
+                  116
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "root_hash"
+              },
+              {
+                "kind": "arg",
+                "path": "verification_type"
+              }
+            ]
+          }
+        },
+        {
+          "name": "config",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  67,
+                  111,
+                  110,
+                  102,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "root_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "verification_type",
+          "type": {
+            "array": [
+              "u8",
+              1
+            ]
+          }
+        },
+        {
+          "name": "signal_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "nullifier_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "external_nullifier_hash",
+          "type": {
+            "array": [
+              "u8",
+              32
+            ]
+          }
+        },
+        {
+          "name": "proof",
+          "type": {
+            "array": [
+              "u8",
+              256
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "Config",
+      "discriminator": [
+        155,
+        12,
+        170,
+        224,
+        30,
+        250,
+        204,
+        130
+      ]
+    },
+    {
+      "name": "GuardianSignatures",
+      "discriminator": [
+        203,
+        184,
+        130,
+        157,
+        113,
+        14,
+        184,
+        83
+      ]
+    },
+    {
+      "name": "LatestRoot",
+      "discriminator": [
+        12,
+        245,
+        231,
+        246,
+        191,
+        63,
+        169,
+        95
+      ]
+    },
+    {
+      "name": "Root",
+      "discriminator": [
+        46,
+        159,
+        131,
+        37,
+        245,
+        84,
+        5,
+        9
+      ]
+    },
+    {
+      "name": "WormholeGuardianSet",
+      "discriminator": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6256,
+      "name": "WriteAuthorityMismatch",
+      "msg": "WriteAuthorityMismatch"
+    },
+    {
+      "code": 6257,
+      "name": "GuardianSetExpired",
+      "msg": "GuardianSetExpired"
+    },
+    {
+      "code": 6258,
+      "name": "InvalidMessageHash",
+      "msg": "InvalidMessageHash"
+    },
+    {
+      "code": 6259,
+      "name": "NoQuorum",
+      "msg": "NoQuorum"
+    },
+    {
+      "code": 6260,
+      "name": "InvalidGuardianIndexNonIncreasing",
+      "msg": "InvalidGuardianIndexNonIncreasing"
+    },
+    {
+      "code": 6261,
+      "name": "InvalidGuardianIndexOutOfRange",
+      "msg": "InvalidGuardianIndexOutOfRange"
+    },
+    {
+      "code": 6262,
+      "name": "InvalidSignature",
+      "msg": "InvalidSignature"
+    },
+    {
+      "code": 6263,
+      "name": "InvalidGuardianKeyRecovery",
+      "msg": "InvalidGuardianKeyRecovery"
+    },
+    {
+      "code": 6272,
+      "name": "FailedToParseResponse",
+      "msg": "FailedToParseResponse"
+    },
+    {
+      "code": 6273,
+      "name": "InvalidNumberOfRequests",
+      "msg": "InvalidNumberOfRequests"
+    },
+    {
+      "code": 6274,
+      "name": "InvalidRequestChainId",
+      "msg": "InvalidRequestChainId"
+    },
+    {
+      "code": 6275,
+      "name": "InvalidRequestType",
+      "msg": "InvalidRequestType"
+    },
+    {
+      "code": 6276,
+      "name": "InvalidRequestCallDataLength",
+      "msg": "InvalidRequestCallDataLength"
+    },
+    {
+      "code": 6277,
+      "name": "InvalidRequestContract",
+      "msg": "InvalidRequestContract"
+    },
+    {
+      "code": 6278,
+      "name": "InvalidRequestSignature",
+      "msg": "InvalidRequestSignature"
+    },
+    {
+      "code": 6279,
+      "name": "InvalidNumberOfResponses",
+      "msg": "InvalidNumberOfResponses"
+    },
+    {
+      "code": 6280,
+      "name": "InvalidResponseChainId",
+      "msg": "InvalidResponseChainId"
+    },
+    {
+      "code": 6281,
+      "name": "StaleBlockNum",
+      "msg": "StaleBlockNum"
+    },
+    {
+      "code": 6288,
+      "name": "StaleBlockTime",
+      "msg": "StaleBlockTime"
+    },
+    {
+      "code": 6289,
+      "name": "InvalidResponseType",
+      "msg": "InvalidResponseType"
+    },
+    {
+      "code": 6290,
+      "name": "InvalidResponseResultsLength",
+      "msg": "InvalidResponseResultsLength"
+    },
+    {
+      "code": 6291,
+      "name": "InvalidResponseResultLength",
+      "msg": "InvalidResponseResultLength"
+    },
+    {
+      "code": 6292,
+      "name": "RootHashMismatch",
+      "msg": "RootHashMismatch"
+    },
+    {
+      "code": 6293,
+      "name": "NoopExpiryUpdate",
+      "msg": "NoopExpiryUpdate"
+    },
+    {
+      "code": 6294,
+      "name": "RootUnexpired",
+      "msg": "RootUnexpired"
+    },
+    {
+      "code": 6512,
+      "name": "RootExpired",
+      "msg": "RootExpired"
+    },
+    {
+      "code": 6513,
+      "name": "CreateGroth16VerifierFailed",
+      "msg": "CreateGroth16VerifierFailed"
+    },
+    {
+      "code": 6514,
+      "name": "Groth16ProofVerificationFailed",
+      "msg": "Groth16ProofVerificationFailed"
+    },
+    {
+      "code": 10096,
+      "name": "InvalidPendingOwner",
+      "msg": "InvalidPendingOwner"
+    }
+  ],
+  "types": [
+    {
+      "name": "Config",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "owner",
+            "docs": [
+              "Owner of the program."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "pending_owner",
+            "docs": [
+              "Pending next owner (before claiming ownership)."
+            ],
+            "type": {
+              "option": "pubkey"
+            }
+          },
+          {
+            "name": "root_expiry",
+            "docs": [
+              "Time (in seconds) after which a root should be considered expired."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "allowed_update_staleness",
+            "docs": [
+              "Time (in seconds) after which an attempted update should be rejected."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "GuardianSignatures",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "refund_recipient",
+            "docs": [
+              "Payer of this guardian signatures account.",
+              "Only they may amend signatures.",
+              "Used for reimbursements upon cleanup."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "guardian_signatures",
+            "docs": [
+              "Unverified guardian signatures."
+            ],
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  66
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "InitializeArgs",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "root_expiry",
+            "type": "u64"
+          },
+          {
+            "name": "allowed_update_staleness",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LatestRoot",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "read_block_number",
+            "docs": [
+              "Block number from which the root was read."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "read_block_hash",
+            "docs": [
+              "Block hash from which the root was read."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "read_block_time",
+            "docs": [
+              "Block time (in microseconds) from which the root was read."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "root",
+            "docs": [
+              "Root hash of the last posted root account."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verification_type",
+            "docs": [
+              "SEED: Verification type. Stored for off-chain convenience."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Root",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "read_block_number",
+            "docs": [
+              "Block number from which the root was read."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "read_block_hash",
+            "docs": [
+              "Block hash from which the root was read."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "read_block_time",
+            "docs": [
+              "Block time (in microseconds) from which the root was read."
+            ],
+            "type": "u64"
+          },
+          {
+            "name": "refund_recipient",
+            "docs": [
+              "Payer of this root account, used for reimbursements upon cleanup."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "root",
+            "docs": [
+              "SEED: Root hash. Stored for off-chain convenience."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                32
+              ]
+            }
+          },
+          {
+            "name": "verification_type",
+            "docs": [
+              "SEED: Verification type. Stored for off-chain convenience."
+            ],
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WormholeGuardianSet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "index",
+            "docs": [
+              "Index representing an incrementing version number for this guardian set."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "keys",
+            "docs": [
+              "Ethereum-style public keys."
+            ],
+            "type": {
+              "vec": {
+                "array": [
+                  "u8",
+                  20
+                ]
+              }
+            }
+          },
+          {
+            "name": "creation_time",
+            "docs": [
+              "Timestamp representing the time this guardian became active."
+            ],
+            "type": "u32"
+          },
+          {
+            "name": "expiration_time",
+            "docs": [
+              "Expiration time when VAAs issued by this set are no longer valid."
+            ],
+            "type": "u32"
+          }
+        ]
+      }
+    }
+  ]
+}

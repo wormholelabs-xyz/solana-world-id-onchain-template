@@ -17,3 +17,30 @@ export const deriveConfigKey = (worldIdProgramId: anchor.web3.PublicKey) => {
     worldIdProgramId
   )[0];
 };
+
+export function deriveLatestRootKey(
+  worldIdProgramId: anchor.web3.PublicKey,
+  type: number
+): anchor.web3.PublicKey {
+  return anchor.web3.PublicKey.findProgramAddressSync(
+    [Buffer.from("LatestRoot"), Buffer.from([type])],
+    worldIdProgramId
+  )[0];
+}
+
+export function deriveGuardianSetKey(
+  wormholeProgramId: anchor.web3.PublicKey,
+  index: number
+): anchor.web3.PublicKey {
+  return anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("GuardianSet"),
+      (() => {
+        const buf = Buffer.alloc(4);
+        buf.writeUInt32BE(index);
+        return buf;
+      })(),
+    ],
+    wormholeProgramId
+  )[0];
+}
