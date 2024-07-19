@@ -5,20 +5,20 @@ import { getEnv } from "@/utils/env";
 import { getExplorerUrl } from "@/utils/getExplorerUrl";
 import { parseIdKitResults } from "@/utils/parseIdKitResults";
 import {
-	deriveConfigKey,
-	deriveGuardianSetKey,
-	deriveLatestRootKey,
-	deriveRootKey,
+  deriveConfigKey,
+  deriveGuardianSetKey,
+  deriveLatestRootKey,
+  deriveRootKey,
 } from "@/utils/pdaHelpers";
 import { queryMock } from "@/utils/queryMock";
 import { sendAndConfirmTx } from "@/utils/sendAndConfirmTx";
 import { AnchorProvider, Program } from "@coral-xyz/anchor";
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
-	Keypair,
-	PublicKey,
-	SystemProgram,
-	Transaction
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
 } from "@solana/web3.js";
 import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
 import { useState } from "react";
@@ -97,7 +97,7 @@ export function VerifyAndExecuteButton() {
           rootHash,
           nullifierHash,
           proof,
-          provider.wallet.publicKey,
+          wallet.publicKey,
           rootKey,
           wallet.publicKey,
           config,
@@ -146,18 +146,14 @@ export function VerifyAndExecuteButton() {
       <IDKitWidget
         app_id="app_staging_7d23b838b02776cebd87b86ac3248641"
         action="testing"
-        signal={`0x${new PublicKey(
-          "5yNbCZcCHeAxdmMJXcpFgmurEnygaVbCRwZNMMWETdeZ"
-        )
-          .toBuffer()
-          .toString("hex")}`}
+        signal={`0x${wallet.publicKey?.toBuffer().toString("hex")}`}
         onSuccess={verifyAndExecute}
         autoClose
       >
         {({ open }) => (
           <Button
             onClick={open}
-            disabled={!wallet.connected || isLoading}
+            disabled={!wallet.connected || !wallet.publicKey || isLoading}
             className="w-full mt-4"
           >
             {isLoading ? "Verifying..." : "Verify and Execute"}
@@ -167,4 +163,3 @@ export function VerifyAndExecuteButton() {
     </>
   );
 }
-
