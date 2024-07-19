@@ -48,7 +48,7 @@ address = "dxZtypiKT5D9LYzdPxjvSZER9MgYfeRVU5qpMTMTRs4"
 filename = "tests/accounts/core_bridge_testnet/guardian_set_0_mock.json"
 
 [scripts]
-test = "npx tsc --noEmit && yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/solana-world-id-onchain-template.ts"
+test = "npx tsc --noEmit && npx ts-mocha -p ./tsconfig.json -t 1000000 tests/solana-world-id-onchain-template.ts"
 
 [test]
 upgradeable = true

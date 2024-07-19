@@ -55,8 +55,7 @@ fn hash_to_field(input: &[u8]) -> [u8; 32] {
     let hash_result = hash(input).to_bytes();
     let big_int: U256 = U256::from_be_bytes(hash_result);
     let shifted: U256 = big_int >> 8;
-    let result = shifted.to_be_bytes();
-    result
+    shifted.to_be_bytes()
 }
 
 fn app_id_action_to_external_nullifier_hash(app_id: &str, action: &str) -> [u8; 32] {
