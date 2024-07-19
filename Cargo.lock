@@ -823,20 +823,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "groth16-solana"
-version = "0.0.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "acc65a9ef90161a41b67cd4611e113d09f3819a1d488e4effafde92fca70861d"
-dependencies = [
- "ark-bn254",
- "ark-ec",
- "ark-ff",
- "ark-serialize",
- "solana-program",
- "thiserror",
-]
-
-[[package]]
 name = "hashbrown"
 version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -868,12 +854,6 @@ checksum = "6d621efb26863f0e9924c6ac577e8275e5e6b77455db64ffa6c65c904e9e132c"
 dependencies = [
  "unicode-segmentation",
 ]
-
-[[package]]
-name = "hex"
-version = "0.4.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7f24254aa9a54b5c858eaee2f5bccdb46aaf0e486a595ed5fd8f86ba55232a70"
 
 [[package]]
 name = "hmac"
@@ -1616,14 +1596,7 @@ name = "solana-world-id-onchain-template"
 version = "0.1.0"
 dependencies = [
  "anchor-lang",
- "cfg-if",
  "ethnum",
- "groth16-solana",
- "hex",
- "solana-program",
- "wormhole-query-sdk",
- "wormhole-solana-consts",
- "wormhole-solana-utils",
 ]
 
 [[package]]
@@ -1963,34 +1936,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "59b5e5f6c299a3c7890b876a2a587f3115162487e704907d9b6cd29473052ba1"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "wormhole-query-sdk"
-version = "0.0.1"
-source = "git+https://github.com/wormholelabs-xyz/wormhole-query-sdk-rust?rev=0f34cb470f4e3137b53aa91adcbb0c7def280925#0f34cb470f4e3137b53aa91adcbb0c7def280925"
-dependencies = [
- "byteorder",
-]
-
-[[package]]
-name = "wormhole-solana-consts"
-version = "0.3.0-alpha.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "95ae70b3233a1d2e799276528ad7ec0a55c9929f8eae41683a5d6f0e8ba37649"
-dependencies = [
- "cfg-if",
- "solana-program",
-]
-
-[[package]]
-name = "wormhole-solana-utils"
-version = "0.3.0-alpha.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d49bd1af023d73c6d6538cb6d9ea86111dac109ae134f45f7930425e372bf9cf"
-dependencies = [
- "anchor-lang",
- "solana-program",
 ]
 
 [[package]]

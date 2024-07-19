@@ -1,12 +1,15 @@
 import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
-import { SolanaWorldIdOnchainTemplate } from "../target/types/solana_world_id_onchain_template";
-import fmtTest from "./helpers/fmtTest";
-import { assert, expect, use } from "chai";
-import { deriveRootKey } from "./helpers/root";
 import { PublicKey } from "@solana/web3.js";
+import { assert, expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import worldIdIdl from "../idls/solana_world_id_program.json";
+import { SolanaWorldIdOnchainTemplate } from "../target/types/solana_world_id_onchain_template";
 import { deriveConfigKey } from "./helpers/config";
+import fmtTest from "./helpers/fmtTest";
+import { mockUpdateRoot } from "./helpers/mockUpdateRoot";
+import { deriveRootKey } from "./helpers/root";
+import { SolanaWorldIdProgram } from "./helpers/solana_world_id_program";
 
 use(chaiAsPromised);
 
@@ -14,6 +17,11 @@ describe("solana-world-id-onchain-template", () => {
   // Configure the client to use the local cluster.
   const provider = anchor.AnchorProvider.env();
   anchor.setProvider(anchor.AnchorProvider.env());
+
+  const worldIdProgram = new Program<SolanaWorldIdProgram>(
+    worldIdIdl as any,
+    provider
+  );
 
   const program = anchor.workspace
     .SolanaWorldIdOnchainTemplate as Program<SolanaWorldIdOnchainTemplate>;
@@ -80,6 +88,7 @@ describe("solana-world-id-onchain-template", () => {
       "Successfully verifies and adds nullifier PDA"
     ),
     async () => {
+      await mockUpdateRoot(worldIdProgram, rootHash);
       await expect(verifyAndExecute(rootHash, nullifierHash, proof, recipient))
         .to.be.fulfilled;
 
