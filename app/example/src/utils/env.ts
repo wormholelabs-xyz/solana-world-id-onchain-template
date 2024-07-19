@@ -4,10 +4,9 @@ const SOLANA_RPC_URL_MAP = {
   mainnet: "https://api.mainnet-beta.solana.com",
 };
 
-export function getEnv() {
-  const NETWORK: "localnet" | "testnet" | "mainnet" = import.meta.env
-    .VITE_NETWORK;
+export type Network = keyof typeof SOLANA_RPC_URL_MAP;
 
-  const SOLANA_RPC_URL = SOLANA_RPC_URL_MAP[NETWORK];
-  return { NETWORK, SOLANA_RPC_URL };
+export function getEnv(network: Network) {
+  const SOLANA_RPC_URL = SOLANA_RPC_URL_MAP[network];
+  return { SOLANA_RPC_URL };
 }

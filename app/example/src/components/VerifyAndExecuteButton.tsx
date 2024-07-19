@@ -1,7 +1,7 @@
 import { SolanaWorldIdProgram } from "@/target/types/solana_world_id_program";
 import { checkAndHandleRootUpdate } from "@/utils/checkAndHandleRootUpdate";
 import { createVerifyAndExecuteInstruction } from "@/utils/createVerifyAndExecuteIx";
-import { getEnv } from "@/utils/env";
+import { Network } from "@/utils/env";
 import { getExplorerUrl } from "@/utils/getExplorerUrl";
 import { parseIdKitResults } from "@/utils/parseIdKitResults";
 import {
@@ -33,8 +33,9 @@ const DEVNET_CORE_BRIDGE_ADDRESS = new PublicKey(
   "3u8hJUVTA4jH1wYAyUur7FFZVQ8H635K3tSHHF4ssjQ5"
 );
 
-export function VerifyAndExecuteButton() {
+export function VerifyAndExecuteButton(props: { network: Network }) {
   const wallet = useWallet();
+
   const { connection } = useConnection();
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
@@ -52,11 +53,11 @@ export function VerifyAndExecuteButton() {
     setIsLoading(true);
 
     try {
-      const { NETWORK } = getEnv();
       const program = new Program(
         idl as any,
         provider
       ) as Program<SolanaWorldIdOnchainTemplate>;
+
       const { rootHash, nullifierHash, proof } =
         parseIdKitResults(idkitSuccessResult);
       const { bytes, signatures } = await queryMock(
@@ -77,7 +78,7 @@ export function VerifyAndExecuteButton() {
       const tx = new Transaction();
       const needUpdateRoot = await checkAndHandleRootUpdate(
         connection,
-        NETWORK,
+        props.network,
         wallet.publicKey,
         worldIdProgram,
         bytes,
@@ -122,7 +123,7 @@ export function VerifyAndExecuteButton() {
           <ToastAction
             altText="View transaction"
             onClick={() =>
-              window.open(getExplorerUrl(NETWORK, signature), "_blank")
+              window.open(getExplorerUrl(props.network, signature), "_blank")
             }
           >
             View transaction
