@@ -10,9 +10,9 @@ export async function postQuerySigs(
   p: Program<SolanaWorldIdProgram>
 ) {
   const signatureData = signaturesToSolanaArray(querySignatures);
-  await p.methods
+  return await p.methods
     .postSignatures(signatureData, totalSignatures || signatureData.length)
     .accounts({ guardianSignatures: signatureKeypair.publicKey })
     .signers([signatureKeypair])
-    .rpc();
+    .instruction();
 }

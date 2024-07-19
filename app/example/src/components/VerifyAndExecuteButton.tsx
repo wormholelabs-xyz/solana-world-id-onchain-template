@@ -1,28 +1,34 @@
-import { useEffect, useState } from "react";
-import { useWallet, useConnection } from "@solana/wallet-adapter-react";
-import { Program } from "@coral-xyz/anchor";
-import * as anchor from "@coral-xyz/anchor";
-import { SystemProgram, PublicKey, Connection } from "@solana/web3.js";
-import { Button } from "./ui/button";
-import { SolanaWorldIdOnchainTemplate } from "../target/types/solana_world_id_onchain_template";
-import idl from "../../../../target/idl/solana_world_id_onchain_template.json";
-import worldIdIdl from "../target/idl/solana_world_id_program.json";
-import { WORLD_ID_PROGRAM_ID } from "../utils/constants";
-import {
-  deriveRootKey,
-  deriveConfigKey,
-  deriveGuardianSetKey,
-  deriveLatestRootKey,
-} from "../utils/pdaHelpers";
-import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
+import { SolanaWorldIdProgram } from "@/target/types/solana_world_id_program";
+import { parseIdKitResults } from "@/utils/parseIdKitResults";
 import { postQuerySigs } from "@/utils/postQuerySigs";
 import { queryMock } from "@/utils/queryMock";
-import { SolanaWorldIdProgram } from "@/target/types/solana_world_id_program";
+import { requestAirdrop } from "@/utils/requestAirdrop";
+import * as anchor from "@coral-xyz/anchor";
+import { Program } from "@coral-xyz/anchor";
+import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 import {
-  EthCallQueryResponse,
-  QueryProxyMock,
-  QueryResponse,
+	PublicKey,
+	SystemProgram,
+	Transaction,
+} from "@solana/web3.js";
+import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
+import {
+	EthCallQueryResponse,
+	QueryProxyMock,
+	QueryResponse,
 } from "@wormhole-foundation/wormhole-query-sdk";
+import { useState } from "react";
+import idl from "../../../../target/idl/solana_world_id_onchain_template.json";
+import worldIdIdl from "../target/idl/solana_world_id_program.json";
+import { SolanaWorldIdOnchainTemplate } from "../target/types/solana_world_id_onchain_template";
+import { WORLD_ID_PROGRAM_ID } from "../utils/constants";
+import {
+	deriveConfigKey,
+	deriveGuardianSetKey,
+	deriveLatestRootKey,
+	deriveRootKey,
+} from "../utils/pdaHelpers";
+import { Button } from "./ui/button";
 
 const ETH_RPC_URL = "https://ethereum-sepolia-rpc.publicnode.com";
 // https://docs.wormhole.com/wormhole/reference/constants
@@ -53,30 +59,16 @@ export function VerifyAndExecuteButton() {
     if (!wallet.connected || !wallet.publicKey) return;
     setIsLoading(true);
     try {
-      const signature = await connection.requestAirdrop(
-        wallet.publicKey,
-        1000000000
-      );
-      await connection.confirmTransaction(signature);
-
-      const provider = new anchor.AnchorProvider(connection, wallet as any, {
-        commitment: "processed",
-      });
+      await requestAirdrop(connection, wallet.publicKey);
 
       const program = new Program(
         idl as any,
         provider
       ) as Program<SolanaWorldIdOnchainTemplate>;
 
-      const rootHash = [
-        ...Buffer.from(idkitSuccessResult.merkle_root.substring(2), "hex"),
-      ];
-      const nullifierHash = [
-        ...Buffer.from(idkitSuccessResult.nullifier_hash.substring(2), "hex"),
-      ];
-      const proof = [
-        ...Buffer.from(idkitSuccessResult.proof.substring(2), "hex"),
-      ];
+      const { rootHash, nullifierHash, proof } = parseIdKitResults(
+        idkitSuccessResult
+      );
 
       const { mockQueryResponse } = await queryMock(
         new PublicKey(WORLD_ID_PROGRAM_ID),
@@ -94,7 +86,13 @@ export function VerifyAndExecuteButton() {
         futureResponseBytes
       );
       const signatureSet = anchor.web3.Keypair.generate();
-      await postQuerySigs(futureResponseSigs, signatureSet, 0, worldIdProgram);
+
+      const postQuerySigsInstruction = await postQuerySigs(
+        futureResponseSigs,
+        signatureSet,
+        0,
+        worldIdProgram
+      );
 
       console.log(deriveGuardianSetKey(devnetCoreBridgeAddress, 0).toBase58());
       const guardianSet = deriveGuardianSetKey(devnetCoreBridgeAddress, 0);
@@ -116,24 +114,21 @@ export function VerifyAndExecuteButton() {
         }
         i++;
       }
-      try {
-        await worldIdProgram.methods
-          .updateRootWithQuery(Buffer.from(futureResponseBytes), rootHash, 0)
-          .accountsPartial({
-            guardianSet: guardianSet,
-            guardianSignatures: signatureSet.publicKey,
-            root: rootKey,
-            latestRoot: latestRootKey,
-            config: config,
-            refundRecipient: wallet.publicKey,
-            systemProgram: SystemProgram.programId,
-          })
-          .rpc();
-      } catch (error) {
-        console.error("Error:", error);
-      }
 
-      const tx = await program.methods
+      const updateRootWithQueryInstruction = await worldIdProgram.methods
+        .updateRootWithQuery(Buffer.from(futureResponseBytes), rootHash, 0)
+        .accountsPartial({
+          guardianSet: guardianSet,
+          guardianSignatures: signatureSet.publicKey,
+          root: rootKey,
+          latestRoot: latestRootKey,
+          config: config,
+          refundRecipient: wallet.publicKey,
+          systemProgram: SystemProgram.programId,
+        })
+        .instruction();
+
+      const verifyAndExecuteInstruction = await program.methods
         .verifyAndExecute({
           rootHash: [
             ...Buffer.from(idkitSuccessResult.merkle_root.substring(2), "hex"),
@@ -155,9 +150,33 @@ export function VerifyAndExecuteButton() {
           worldIdProgram: WORLD_ID_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
         })
-        .rpc();
+        .instruction();
 
-      console.log("Transaction signature", tx);
+      const transaction = new Transaction().add(
+        postQuerySigsInstruction,
+        updateRootWithQueryInstruction,
+        verifyAndExecuteInstruction
+      );
+      // Get the latest blockhash and set it on the transaction
+      const { blockhash } = await connection.getLatestBlockhash();
+      transaction.recentBlockhash = blockhash;
+
+      // Set the feePayer to the wallet's public key
+      transaction.feePayer = wallet.publicKey;
+
+      // Sign the transaction with the signatureSet
+      transaction.partialSign(signatureSet);
+
+      // Sign the transaction with the wallet
+      const signedTransaction = await wallet.signTransaction!(transaction);
+
+      // Send and confirm the signed transaction
+      const signature = await connection.sendRawTransaction(
+        signedTransaction.serialize()
+      );
+      await connection.confirmTransaction(signature);
+
+      console.log("Transaction signature", signature);
       alert("Verification successful!");
     } catch (error) {
       console.error("Error:", error);
