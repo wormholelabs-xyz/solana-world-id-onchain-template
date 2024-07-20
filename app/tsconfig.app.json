@@ -29,5 +29,10 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src", "../../target/**/*.ts"]
+  "include": [
+    "src",
+    "../idls/**/*.ts",
+    "../target/**/*.ts",
+    "../tests/helpers/**/*.ts"
+  ]
 }

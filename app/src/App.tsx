@@ -1,14 +1,14 @@
-import { useMemo, useState } from "react";
 import {
   ConnectionProvider,
   WalletProvider,
 } from "@solana/wallet-adapter-react";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import {
   WalletModalProvider,
   WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
 import "@solana/wallet-adapter-react-ui/styles.css";
+import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
+import { useMemo, useState } from "react";
 import {
   Card,
   CardContent,

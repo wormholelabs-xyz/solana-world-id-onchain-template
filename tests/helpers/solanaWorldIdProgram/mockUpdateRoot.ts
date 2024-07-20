@@ -1,5 +1,10 @@
-import { SolanaWorldIdProgram } from "@/target/types/solana_world_id_program";
 import { Program } from "@coral-xyz/anchor";
+import {
+  Keypair,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import {
   EthCallQueryRequest,
   EthCallQueryResponse,
@@ -7,12 +12,19 @@ import {
   QueryResponse,
 } from "@wormhole-foundation/wormhole-query-sdk";
 import { BN } from "bn.js";
-import { deriveLatestRootKey } from "./pdaHelpers";
+import { SolanaWorldIdProgram } from "../../../idls/solana_world_id_program";
+import { deriveLatestRootKey } from "./latestRoot";
+import { signaturesToSolanaArray } from "./signaturesToSolanaArray";
+import { deriveRootKey } from "./root";
+import { deriveConfigKey } from "./config";
 
-export async function queryMock(
+// This is a testing helper for posting roots to the Solana World ID Program so that groth16 proofs can be verified against them.
+// If a transaction is provided, it will add the instructions to the transaction.
+export async function mockUpdateRoot(
   program: Program<SolanaWorldIdProgram>,
-  rootHash: string
-) {
+  rootHash: number[],
+  tx?: Transaction
+): Promise<Keypair> {
   const slot = await program.provider.connection.getSlot();
   const blockTimeInSeconds = await program.provider.connection.getBlockTime(
     slot
@@ -21,7 +33,7 @@ export async function queryMock(
   if (!blockTimeInSeconds) {
     throw new Error("Failed to get block time");
   }
-  const blockTime = new BN(blockTimeInSeconds).mul(new BN(1_000_000)); // seconds to microseconds;s
+  const blockTime = new BN(blockTimeInSeconds).mul(new BN(1_000_000)); // seconds to microseconds;
   const latestRootKey = deriveLatestRootKey(program.programId, 0);
   const latestRoot = await program.account.latestRoot.fetch(latestRootKey);
   // this is a query response from mainnet that can be used as the basis for an update
@@ -43,11 +55,34 @@ export async function queryMock(
     BigInt(latestRoot.readBlockNumber.toString()) + BigInt(1);
   // block time must be within allowed update staleness, set the current slot time
   ethCallResponse.blockTime = BigInt(blockTime.toString());
-  ethCallResponse.results[0] = `0x${rootHash}`;
+  ethCallResponse.results[0] = `0x${Buffer.from(rootHash).toString("hex")}`;
   const bytes = queryResponse.serialize();
   const signatures = new QueryProxyMock({}).sign(bytes);
-  return {
-    bytes,
-    signatures,
-  };
+  const signatureData = signaturesToSolanaArray(signatures);
+  const signaturesKeypair = Keypair.generate();
+  const postIx = await program.methods
+    .postSignatures(signatureData, signatureData.length)
+    .accounts({ guardianSignatures: signaturesKeypair.publicKey })
+    .instruction();
+  const updateBuilder = program.methods
+    .updateRootWithQuery(Buffer.from(bytes), rootHash, 0)
+    .accountsPartial({
+      // explicity list the accounts to avoid "reached maximum depth for account resolution"
+      guardianSet: new PublicKey("dxZtypiKT5D9LYzdPxjvSZER9MgYfeRVU5qpMTMTRs4"), // mock guardian set in Anchor.toml
+      guardianSignatures: signaturesKeypair.publicKey,
+      root: deriveRootKey(program.programId, Buffer.from(rootHash), 0),
+      latestRoot: deriveLatestRootKey(program.programId, 0),
+      config: deriveConfigKey(program.programId),
+      refundRecipient: program.provider.publicKey,
+      systemProgram: SystemProgram.programId,
+    });
+  if (tx) {
+    tx.add(postIx, await updateBuilder.instruction());
+  } else {
+    await updateBuilder
+      .preInstructions([postIx])
+      .signers([signaturesKeypair])
+      .rpc();
+  }
+  return signaturesKeypair;
 }
