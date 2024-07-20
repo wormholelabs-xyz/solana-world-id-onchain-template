@@ -3,13 +3,14 @@ import { Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { assert, expect, use } from "chai";
 import chaiAsPromised from "chai-as-promised";
+import { SolanaWorldIdProgram } from "../idls/solana_world_id_program";
 import worldIdIdl from "../idls/solana_world_id_program.json";
 import { SolanaWorldIdOnchainTemplate } from "../target/types/solana_world_id_onchain_template";
-import { deriveConfigKey } from "./helpers/config";
 import fmtTest from "./helpers/fmtTest";
-import { mockUpdateRoot } from "./helpers/mockUpdateRoot";
-import { deriveRootKey } from "./helpers/root";
-import { SolanaWorldIdProgram } from "./helpers/solana_world_id_program";
+import { deriveNullifierKey } from "./helpers/nullifier";
+import { deriveConfigKey } from "./helpers/solanaWorldIdProgram/config";
+import { mockUpdateRoot } from "./helpers/solanaWorldIdProgram/mockUpdateRoot";
+import { deriveRootKey } from "./helpers/solanaWorldIdProgram/root";
 
 use(chaiAsPromised);
 
@@ -19,7 +20,7 @@ describe("solana-world-id-onchain-template", () => {
   anchor.setProvider(anchor.AnchorProvider.env());
 
   const worldIdProgram = new Program<SolanaWorldIdProgram>(
-    worldIdIdl as any,
+    worldIdIdl as SolanaWorldIdProgram,
     provider
   );
 
@@ -69,13 +70,10 @@ describe("solana-world-id-onchain-template", () => {
         config: deriveConfigKey(WORLD_ID_PROGRAM_ID),
       })
       .accountsPartial({
-        nullifier: anchor.web3.PublicKey.findProgramAddressSync(
-          [
-            Buffer.from("nullifier"),
-            Buffer.from(idkitSuccessResult.nullifier_hash.substring(2), "hex"),
-          ],
-          program.programId
-        )[0],
+        nullifier: deriveNullifierKey(
+          program.programId,
+          Buffer.from(idkitSuccessResult.nullifier_hash.substring(2), "hex")
+        ),
         worldIdProgram: WORLD_ID_PROGRAM_ID,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
@@ -93,12 +91,9 @@ describe("solana-world-id-onchain-template", () => {
         .to.be.fulfilled;
 
       // Add assertions here to check if the verification was successful
-      const [nullifierPda] = anchor.web3.PublicKey.findProgramAddressSync(
-        [
-          Buffer.from("nullifier"),
-          Buffer.from(idkitSuccessResult.nullifier_hash.substring(2), "hex"),
-        ],
-        program.programId
+      const nullifierPda = deriveNullifierKey(
+        program.programId,
+        Buffer.from(idkitSuccessResult.nullifier_hash.substring(2), "hex")
       );
 
       const connection = program.provider.connection;
