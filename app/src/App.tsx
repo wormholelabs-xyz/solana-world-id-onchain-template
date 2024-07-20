@@ -40,7 +40,7 @@ function App() {
             <Card className="w-[350px]">
               <CardHeader>
                 <CardTitle>Solana World ID</CardTitle>
-                <CardDescription>~
+                <CardDescription>
                   Connect your wallet and verify
                 </CardDescription>
               </CardHeader>
@@ -53,7 +53,7 @@ function App() {
                     <SelectValue placeholder="Select network" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="mainnet" disabled={true}>
+                    <SelectItem value="mainnet" disabled>
                       Mainnet
                     </SelectItem>
                     <SelectItem value="testnet">Testnet</SelectItem>
