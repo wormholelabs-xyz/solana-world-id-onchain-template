@@ -22,7 +22,7 @@ import {
 } from "@solana/web3.js";
 import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
 import { useState } from "react";
-import idl from "../../../../target/idl/solana_world_id_onchain_template.json";
+import idl from "../../../target/idl/solana_world_id_onchain_template.json";
 import worldIdIdl from "../target/idl/solana_world_id_program.json";
 import { SolanaWorldIdOnchainTemplate } from "../target/types/solana_world_id_onchain_template";
 import { Button } from "./ui/button";

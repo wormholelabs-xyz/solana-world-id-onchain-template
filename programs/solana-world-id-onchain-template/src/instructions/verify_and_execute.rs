@@ -100,7 +100,7 @@ pub fn verify_and_execute(
     let external_nullifier_hash: [u8; 32] =
         app_id_action_to_external_nullifier_hash(APP_ID, ACTION);
 
-    // Calculate the signal hash by converting the recipient key to hex and hashing it˝
+    // Calculate the signal hash by converting the recipient key to hex and hashing it
     let signal_bytes = ctx.accounts.recipient.key().to_bytes();
     let signal_hash = hash_to_field(&signal_bytes);
 
