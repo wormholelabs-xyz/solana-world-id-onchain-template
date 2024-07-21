@@ -5,6 +5,7 @@ import { parseIdKitResults } from "@/utils/parseIdKitResults";
 import { sendAndConfirmTx } from "@/utils/sendAndConfirmTx";
 import { AnchorProvider, Program, Wallet } from "@coral-xyz/anchor";
 import CloseIcon from "@mui/icons-material/Close";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import Snackbar from "@mui/material/Snackbar";
@@ -113,7 +114,7 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
         severity: "success",
         action: (
           <Button
-            color="primary"
+            color="inherit"
             size="small"
             href={getExplorerUrl(props.network, signature)}
             target="_blank"
@@ -159,22 +160,30 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         open={snackbar.open}
         onClose={handleCloseSnackbar}
-        message={snackbar.message}
         autoHideDuration={6000}
-        action={
-          <React.Fragment>
-            {snackbar.action}
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={handleCloseSnackbar}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
-          </React.Fragment>
-        }
-      />
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          variant="outlined"
+          severity={snackbar.severity}
+          action={
+            <>
+              {snackbar.action}
+              <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={handleCloseSnackbar}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </>
+          }
+          sx={{ width: "100%" }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
