@@ -4,41 +4,66 @@ import { getExplorerUrl } from "@/utils/getExplorerUrl";
 import { parseIdKitResults } from "@/utils/parseIdKitResults";
 import { sendAndConfirmTx } from "@/utils/sendAndConfirmTx";
 import { AnchorProvider, Program, Wallet } from "@coral-xyz/anchor";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import CloseIcon from "@mui/icons-material/Close";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import Snackbar from "@mui/material/Snackbar";
+import {
+  useAnchorWallet,
+  useConnection,
+  useWallet,
+} from "@solana/wallet-adapter-react";
 import { Transaction } from "@solana/web3.js";
 import { IDKitWidget, ISuccessResult } from "@worldcoin/idkit";
-import { useState } from "react";
+import React, { useState } from "react";
 import { SolanaWorldIdProgram } from "../../../idls/solana_world_id_program";
 import worldIdIdl from "../../../idls/solana_world_id_program.json";
 import idl from "../../../target/idl/solana_world_id_onchain_template.json";
 import { SolanaWorldIdOnchainTemplate } from "../../../target/types/solana_world_id_onchain_template";
 import { deriveConfigKey } from "../../../tests/helpers/solanaWorldIdProgram/config";
 import { deriveRootKey } from "../../../tests/helpers/solanaWorldIdProgram/root";
-import { Button } from "./ui/button";
-import { ToastAction } from "./ui/toast";
-import { useToast } from "./ui/use-toast";
 
 export function VerifyAndExecuteButton(props: { network: Network }) {
   const wallet = useWallet();
+  const anchorWallet = useAnchorWallet();
 
   const { connection } = useConnection();
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
+  const [snackbar, setSnackbar] = useState<{
+    signature?: string;
+    open: boolean;
+    message: string;
+    severity: "success" | "error";
+    action?: React.ReactNode;
+  }>({ open: false, message: "", severity: "success" });
 
-  const provider = new AnchorProvider(connection, wallet as Wallet, {
+  const provider = new AnchorProvider(connection, anchorWallet as Wallet, {
     commitment: "processed",
   });
   const worldIdProgram = new Program<SolanaWorldIdProgram>(
-    worldIdIdl,
+    worldIdIdl as any,
     provider
   );
+
+  const handleCloseSnackbar = (
+    _: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setSnackbar({ ...snackbar, open: false });
+  };
 
   const verifyAndExecute = async (idkitSuccessResult: ISuccessResult) => {
     if (!wallet.connected || !wallet.publicKey) return;
     setIsLoading(true);
 
     try {
-      const program = new Program<SolanaWorldIdOnchainTemplate>(idl, provider);
+      const program = new Program<SolanaWorldIdOnchainTemplate>(
+        idl as any,
+        provider
+      );
 
       const { rootHash, nullifierHash, proof } =
         parseIdKitResults(idkitSuccessResult);
@@ -82,25 +107,28 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
         updateKeypair
       );
 
-      toast({
-        title: "Verification Successful",
+      setSnackbar({
+        open: true,
+        message: "Verification Successful",
+        severity: "success",
         action: (
-          <ToastAction
-            altText="View transaction"
+          <Button
+            color="primary"
+            size="small"
             onClick={() =>
               window.open(getExplorerUrl(props.network, signature), "_blank")
             }
           >
             View transaction
-          </ToastAction>
+          </Button>
         ),
       });
     } catch (error) {
       console.error("Error:", error);
-      toast({
-        variant: "destructive",
-        title: "Verification Failed",
-        description: error instanceof Error ? error.message : String(error),
+      setSnackbar({
+        open: true,
+        message: error instanceof Error ? error.message : String(error),
+        severity: "error",
       });
     } finally {
       setIsLoading(false);
@@ -120,12 +148,34 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
           <Button
             onClick={open}
             disabled={!wallet.connected || !wallet.publicKey || isLoading}
-            className="w-full mt-4"
+            fullWidth
+            variant="contained"
+            sx={{ mt: 2 }}
           >
             {isLoading ? "Verifying..." : "Verify and Execute"}
           </Button>
         )}
       </IDKitWidget>
+      <Snackbar
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        open={snackbar.open}
+        onClose={handleCloseSnackbar}
+        message={snackbar.message}
+        autoHideDuration={6000}
+        action={
+          <React.Fragment>
+            {snackbar.action}
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleCloseSnackbar}
+            >
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </>
   );
 }
