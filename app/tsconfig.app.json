@@ -23,10 +23,13 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
 
-    /* shadcn */
+    "rootDir": "..",  // Set this to the parent directory of 'app'
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@target/*": ["../target/*"],
+      "@idls/*": ["../idls/*"],
+      "@tests/*": ["../tests/*"]
     }
   },
   "include": [
