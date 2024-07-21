@@ -41,7 +41,7 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
     commitment: "processed",
   });
   const worldIdProgram = new Program<SolanaWorldIdProgram>(
-    worldIdIdl as any,
+    worldIdIdl as SolanaWorldIdProgram,
     provider
   );
 
@@ -61,7 +61,7 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
 
     try {
       const program = new Program<SolanaWorldIdOnchainTemplate>(
-        idl as any,
+        idl as SolanaWorldIdOnchainTemplate,
         provider
       );
 
@@ -115,9 +115,8 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
           <Button
             color="primary"
             size="small"
-            onClick={() =>
-              window.open(getExplorerUrl(props.network, signature), "_blank")
-            }
+            href={getExplorerUrl(props.network, signature)}
+            target="_blank"
           >
             View transaction
           </Button>
@@ -150,7 +149,7 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
             disabled={!wallet.connected || !wallet.publicKey || isLoading}
             fullWidth
             variant="contained"
-            sx={{ mt: 2 }}
+            sx={{ mt: 2, textTransform: "none" }}
           >
             {isLoading ? "Verifying..." : "Verify and Execute"}
           </Button>

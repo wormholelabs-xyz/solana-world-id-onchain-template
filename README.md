@@ -30,14 +30,12 @@ In a new shell, install project dependencies:
 
 ```bash
 npm ci
-cd app
-npm ci
 ```
 
 Start the development server:
 
 ```bash
-npm run dev
+npm start -w app
 ```
 
 ### Iterating
