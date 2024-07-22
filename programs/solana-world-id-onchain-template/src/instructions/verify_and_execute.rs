@@ -20,16 +20,17 @@ pub struct VerifyAndExecute<'info> {
     #[account(mut)]
     pub payer: Signer<'info>,
 
-    /// CHECK: account is passed to `verify_groth16_proof`
+    /// CHECK: account is passed to `verify_groth16_proof` which checks the PDA.
     pub root: AccountInfo<'info>,
 
-    /// CHECK: account is passed to `verify_groth16_proof`
+    /// CHECK: account is passed to `verify_groth16_proof` which checks the PDA.
     pub config: AccountInfo<'info>,
 
-    /// CHECK: This account is the recipient and must exist, but can be any type of account
+    /// CHECK: This account is the recipient and must exist, but can be any type of account.
+    /// In practice, this might be a wallet address or a SPL associated token account.
     pub recipient: UncheckedAccount<'info>,
 
-    /// CHECK: This account is used as a PDA to ensure uniqueness and is not read or written to
+    /// CHECK: This account is used as a PDA to ensure uniqueness and is not read or written to.
     #[account(
         init,
         payer = payer,
