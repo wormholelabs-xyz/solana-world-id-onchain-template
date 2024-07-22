@@ -21,6 +21,7 @@ import { SolanaWorldIdProgram } from "../../../idls/solana_world_id_program";
 import worldIdIdl from "../../../idls/solana_world_id_program.json";
 import idl from "../../../target/idl/solana_world_id_onchain_template.json";
 import { SolanaWorldIdOnchainTemplate } from "../../../target/types/solana_world_id_onchain_template";
+import { deriveNullifierKey } from "../../../tests/helpers/nullifier";
 import { deriveConfigKey } from "../../../tests/helpers/solanaWorldIdProgram/config";
 import { deriveRootKey } from "../../../tests/helpers/solanaWorldIdProgram/root";
 
@@ -101,28 +102,48 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
         .instruction();
 
       tx.add(verifyAndExecuteInstruction);
-      const signature = await sendAndConfirmTx(
-        connection,
-        tx,
-        wallet,
-        updateKeypair
-      );
+      try {
+        const signature = await sendAndConfirmTx(
+          connection,
+          tx,
+          wallet,
+          updateKeypair
+        );
 
-      setSnackbar({
-        open: true,
-        message: "Verification Successful",
-        severity: "success",
-        action: (
-          <Button
-            color="inherit"
-            size="small"
-            href={getExplorerUrl(props.network, signature)}
-            target="_blank"
-          >
-            View transaction
-          </Button>
-        ),
-      });
+        setSnackbar({
+          open: true,
+          message: "Verification Successful",
+          severity: "success",
+          action: (
+            <Button
+              color="inherit"
+              size="small"
+              href={getExplorerUrl(props.network, signature)}
+              target="_blank"
+            >
+              View transaction
+            </Button>
+          ),
+        });
+      } catch (error) {
+        if (
+          error instanceof Error &&
+          error.message.includes(
+            `Allocate: account Address { address: ${deriveNullifierKey(
+              program.programId,
+              Buffer.from(nullifierHash)
+            ).toString()}, base: None } already in use`
+          )
+        ) {
+          setSnackbar({
+            open: true,
+            message: "Nullifier already consumed.",
+            severity: "error",
+          });
+        } else {
+          throw error;
+        }
+      }
     } catch (error) {
       console.error("Error:", error);
       setSnackbar({
