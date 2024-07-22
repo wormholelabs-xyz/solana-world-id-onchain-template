@@ -46,7 +46,7 @@ export async function mockUpdateRoot(
   // chain must be Sepolia
   queryResponse.request.requests[0].chainId = 10002;
   queryResponse.responses[0].chainId = 10002;
-  // contract must be the testnet World ID Identity Manager
+  // contract must be the Sepolia testnet World ID Identity Manager
   (
     queryResponse.request.requests[0].query as EthCallQueryRequest
   ).callData[0].to = "0x928a514350A403e2f5e3288C102f6B1CCABeb37C";
