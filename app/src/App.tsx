@@ -24,7 +24,7 @@ import { VerifyAndExecuteButton } from "./components/VerifyAndExecuteButton";
 import { Network, getEnv } from "./utils/env";
 
 function App() {
-  const [network, setNetwork] = useState<Network>("testnet");
+  const [network, setNetwork] = useState<Network>("devnet");
   const { SOLANA_RPC_URL } = useMemo(() => getEnv(network), [network]);
   const wallets = useMemo(() => [new PhantomWalletAdapter()], []);
 
@@ -70,7 +70,7 @@ function App() {
                     <MenuItem value="mainnet" disabled>
                       Mainnet
                     </MenuItem>
-                    <MenuItem value="testnet">Testnet</MenuItem>
+                    <MenuItem value="devnet">Devnet</MenuItem>
                     <MenuItem value="localnet">Localnet</MenuItem>
                   </Select>
                 </FormControl>

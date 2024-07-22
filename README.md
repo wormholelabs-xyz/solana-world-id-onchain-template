@@ -12,7 +12,7 @@ Create a staging on-chain app in the [Worldcoin Developer Portal](https://develo
 
 Ensure you have installed [Anchor](https://www.anchor-lang.com/docs/installation).
 
-### Local Testnet Setup
+### Local Contract Setup
 
 Set your app ID and action ID from the developer portal in [verify_and_execute.rs](./programs/solana-world-id-onchain-template/src/instructions/verify_and_execute.rs) and [VerifyAndExecuteButton.tsx](app/example/src/components/VerifyAndExecuteButton.tsx).
 
