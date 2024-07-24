@@ -10,11 +10,11 @@ import {
   EthCallQueryResponse,
   QueryProxyMock,
   QueryResponse,
+  signaturesToSolanaArray,
 } from "@wormhole-foundation/wormhole-query-sdk";
 import { BN } from "bn.js";
 import { SolanaWorldIdProgram } from "../../../idls/solana_world_id_program";
 import { deriveLatestRootKey } from "./latestRoot";
-import { signaturesToSolanaArray } from "./signaturesToSolanaArray";
 import { deriveRootKey } from "./root";
 import { deriveConfigKey } from "./config";
 
