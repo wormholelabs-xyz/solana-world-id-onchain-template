@@ -148,6 +148,12 @@ export type SolanaWorldIdProgram = {
           "writable": true
         },
         {
+          "name": "latestRoot",
+          "docs": [
+            "Latest root of the matching verification type"
+          ]
+        },
+        {
           "name": "config",
           "pda": {
             "seeds": [
@@ -167,6 +173,7 @@ export type SolanaWorldIdProgram = {
         },
         {
           "name": "refundRecipient",
+          "writable": true,
           "relations": [
             "root"
           ]
@@ -193,6 +200,7 @@ export type SolanaWorldIdProgram = {
         },
         {
           "name": "refundRecipient",
+          "writable": true,
           "signer": true,
           "relations": [
             "guardianSignatures"
@@ -757,6 +765,7 @@ export type SolanaWorldIdProgram = {
         },
         {
           "name": "refundRecipient",
+          "writable": true,
           "relations": [
             "guardianSignatures"
           ]
@@ -815,6 +824,32 @@ export type SolanaWorldIdProgram = {
               {
                 "kind": "arg",
                 "path": "rootHash"
+              },
+              {
+                "kind": "arg",
+                "path": "verificationType"
+              }
+            ]
+          }
+        },
+        {
+          "name": "latestRoot",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  76,
+                  97,
+                  116,
+                  101,
+                  115,
+                  116,
+                  82,
+                  111,
+                  111,
+                  116
+                ]
               },
               {
                 "kind": "arg",
@@ -1009,6 +1044,11 @@ export type SolanaWorldIdProgram = {
       "msg": "invalidGuardianKeyRecovery"
     },
     {
+      "code": 6264,
+      "name": "emptyGuardianSignatures",
+      "msg": "emptyGuardianSignatures"
+    },
+    {
       "code": 6272,
       "name": "failedToParseResponse",
       "msg": "failedToParseResponse"
@@ -1092,6 +1132,11 @@ export type SolanaWorldIdProgram = {
       "code": 6294,
       "name": "rootUnexpired",
       "msg": "rootUnexpired"
+    },
+    {
+      "code": 6295,
+      "name": "rootIsLatest",
+      "msg": "rootIsLatest"
     },
     {
       "code": 6512,
@@ -1254,7 +1299,7 @@ export type SolanaWorldIdProgram = {
           {
             "name": "verificationType",
             "docs": [
-              "SEED: Verification type. Stored for off-chain convenience."
+              "SEED: Verification type."
             ],
             "type": {
               "array": [
@@ -1311,7 +1356,7 @@ export type SolanaWorldIdProgram = {
           {
             "name": "root",
             "docs": [
-              "SEED: Root hash. Stored for off-chain convenience."
+              "SEED: Root hash."
             ],
             "type": {
               "array": [
@@ -1323,7 +1368,7 @@ export type SolanaWorldIdProgram = {
           {
             "name": "verificationType",
             "docs": [
-              "SEED: Verification type. Stored for off-chain convenience."
+              "SEED: Verification type."
             ],
             "type": {
               "array": [

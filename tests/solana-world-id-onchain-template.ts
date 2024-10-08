@@ -11,6 +11,7 @@ import { deriveNullifierKey } from "./helpers/nullifier";
 import { deriveConfigKey } from "./helpers/solanaWorldIdProgram/config";
 import { mockUpdateRoot } from "./helpers/solanaWorldIdProgram/mockUpdateRoot";
 import { deriveRootKey } from "./helpers/solanaWorldIdProgram/root";
+import { deriveLatestRootKey } from "./helpers/solanaWorldIdProgram/latestRoot";
 
 use(chaiAsPromised);
 
@@ -66,6 +67,7 @@ describe("solana-world-id-onchain-template", () => {
       .accounts({
         payer: provider.wallet.publicKey,
         root: deriveRootKey(WORLD_ID_PROGRAM_ID, Buffer.from(rootHash), 0),
+        latestRoot: deriveLatestRootKey(WORLD_ID_PROGRAM_ID, 0),
         recipient: new PublicKey(recipientPublicKey),
         config: deriveConfigKey(WORLD_ID_PROGRAM_ID),
       })
@@ -119,7 +121,7 @@ describe("solana-world-id-onchain-template", () => {
       await expect(
         verifyAndExecute(rootHash, nullifierHash, proof, recipient)
       ).to.be.rejectedWith(
-        "Allocate: account Address { address: 3LmQpqam7dRrjVA4shbgDFFBK4K5FxiexaZucNj53MjM, base: None } already in use"
+        "Allocate: account Address { address: 4m75V7xB21Ld4c4GQ3UCU86DokaCJgrEi3XoReZbbfiH, base: None } already in use"
       );
     }
   );

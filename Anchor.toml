@@ -7,7 +7,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-solana_world_id_onchain_template = "E8byx9xyWhup2oT2PDR6w2KXHY2Fg2DFNAjj7Svx9spa"
+solana_world_id_onchain_template = "9qKQ5zuSsN1o8ixj788pLNJfL5yyVXe7Mf7wrZZPUKG7"
 
 [registry]
 url = "https://api.apr.dev"

@@ -24,6 +24,9 @@ pub struct VerifyAndExecute<'info> {
     pub root: AccountInfo<'info>,
 
     /// CHECK: account is passed to `verify_groth16_proof` which checks the PDA.
+    pub latest_root: AccountInfo<'info>,
+
+    /// CHECK: account is passed to `verify_groth16_proof` which checks the PDA.
     pub config: AccountInfo<'info>,
 
     /// CHECK: This account is the recipient and must exist, but can be any type of account.
@@ -111,6 +114,7 @@ pub fn verify_and_execute(
             ctx.accounts.world_id_program.to_account_info(),
             VerifyGroth16Proof {
                 root: ctx.accounts.root.to_account_info(),
+                latest_root: ctx.accounts.latest_root.to_account_info(),
                 config: ctx.accounts.config.to_account_info(),
             },
         ),
