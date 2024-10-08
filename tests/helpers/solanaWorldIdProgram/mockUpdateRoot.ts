@@ -49,7 +49,7 @@ export async function mockUpdateRoot(
   // contract must be the Sepolia testnet World ID Identity Manager
   (
     queryResponse.request.requests[0].query as EthCallQueryRequest
-  ).callData[0].to = "0x928a514350A403e2f5e3288C102f6B1CCABeb37C";
+  ).callData[0].to = "0xb2ead588f14e69266d1b87936b75325181377076";
   // block number must be after the latest root
   ethCallResponse.blockNumber =
     BigInt(latestRoot.readBlockNumber.toString()) + BigInt(1);

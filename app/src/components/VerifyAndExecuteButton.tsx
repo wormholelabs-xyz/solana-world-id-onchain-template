@@ -23,6 +23,7 @@ import idl from "../../../target/idl/solana_world_id_onchain_template.json";
 import { SolanaWorldIdOnchainTemplate } from "../../../target/types/solana_world_id_onchain_template";
 import { deriveNullifierKey } from "../../../tests/helpers/nullifier";
 import { deriveConfigKey } from "../../../tests/helpers/solanaWorldIdProgram/config";
+import { deriveLatestRootKey } from "../../../tests/helpers/solanaWorldIdProgram/latestRoot";
 import { deriveRootKey } from "../../../tests/helpers/solanaWorldIdProgram/root";
 
 export function VerifyAndExecuteButton(props: { network: Network }) {
@@ -96,6 +97,7 @@ export function VerifyAndExecuteButton(props: { network: Network }) {
         })
         .accounts({
           root: rootKey,
+          latestRoot: deriveLatestRootKey(worldIdProgram.programId, 0),
           recipient: wallet.publicKey,
           config,
         })
